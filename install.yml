@@ -1,0 +1,54 @@
+---
+
+- name: Fresh system install
+  hosts: localhost
+  tasks:
+    - name: show download dir
+      ansible.builtin.debug:
+        msg: "{{ download_dir }}"
+
+    - name: Install deps
+      become: true
+      become_method: sudo
+      community.general.pacman:
+        package:
+          - docker
+          - docker-buildx
+          - docker-compose
+          - git
+          - keepassxc
+          - podman
+          - steam
+          - vim
+          - wget
+        update_cache: true
+
+    - name: Download apps
+      ansible.builtin.get_url:
+        dest: "{{ download_dir }}"
+        url: "{{ item.url }}"
+        mode: "0644"
+
+      register: apps
+      loop:
+        - name: telegram
+          url: https://telegram.org/dl/desktop/linux
+        - name: vscode
+          url: https://code.visualstudio.com/sha/download?build=stable&os=linux-x64
+        - name: portproton
+          url: https://github.com/Castro-Fidel/PortProton_PKGBUILD/releases/download/portproton-1.0-8-x86_64/portproton-1.0-8-x86_64.pkg.tar.zst
+
+    - name: Download Joplin install script
+      ansible.builtin.get_url:
+        dest: "{{ download_dir }}"
+        url: https://raw.githubusercontent.com/laurent22/joplin/dev/Joplin_install_and_update.sh
+        mode: "0754"
+
+    - name: Exec Joplin install script
+      ansible.builtin.command:
+        cmd: ./Joplin_install_and_update.sh
+        chdir: "{{ download_dir }}"
+      changed_when: false
+
+  # roles:
+  #   - role: zsh

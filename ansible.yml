@@ -1,0 +1,15 @@
+---
+
+- name: Update ansible
+  hosts: localhost
+
+  tasks:
+    - name: Run pip3
+      ansible.builtin.pip:
+        name:
+          - ansible
+          - ansible-lint
+          - setuptools
+        state: latest
+        executable: pip3
+        virtualenv_python: python3

@@ -1,0 +1,17 @@
+---
+
+- name: Update vscode
+  hosts: localhost
+  tasks:
+    - name: Downloading new version
+      ansible.builtin.get_url:
+        url: https://code.visualstudio.com/sha/download?build=stable&os=linux-x64
+        dest: "{{ download_dir }}"
+        mode: "0644"
+      register: vscode_archive
+
+    - name: Extract archive
+      ansible.builtin.unarchive:
+        src: "{{ vscode_archive.dest }}"
+        dest: "{{ download_dir }}"
+        remote_src: true
